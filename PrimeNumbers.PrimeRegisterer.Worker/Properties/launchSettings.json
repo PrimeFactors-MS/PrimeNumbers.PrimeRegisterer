@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "PrimeNumbers.PrimeRegisterer.Worker": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}

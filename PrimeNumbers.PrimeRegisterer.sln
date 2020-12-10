@@ -1,0 +1,41 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30711.63
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrimeNumbers.PrimeRegisterer.Worker", "PrimeNumbers.PrimeRegisterer.Worker\PrimeNumbers.PrimeRegisterer.Worker.csproj", "{2ABECAE6-C885-4DA8-8F3C-F47A006AEF97}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrimeNumbers.Shared.PrimeCalculation", "PrimeNumbers.Shared.PrimeCalculation\PrimeNumbers.Shared.PrimeCalculation.csproj", "{7000BB84-8C09-493C-BEB6-E34177984695}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2ABECAE6-C885-4DA8-8F3C-F47A006AEF97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2ABECAE6-C885-4DA8-8F3C-F47A006AEF97}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2ABECAE6-C885-4DA8-8F3C-F47A006AEF97}.Debug|x64.ActiveCfg = Debug|x64
+		{2ABECAE6-C885-4DA8-8F3C-F47A006AEF97}.Debug|x64.Build.0 = Debug|x64
+		{2ABECAE6-C885-4DA8-8F3C-F47A006AEF97}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2ABECAE6-C885-4DA8-8F3C-F47A006AEF97}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2ABECAE6-C885-4DA8-8F3C-F47A006AEF97}.Release|x64.ActiveCfg = Release|x64
+		{2ABECAE6-C885-4DA8-8F3C-F47A006AEF97}.Release|x64.Build.0 = Release|x64
+		{7000BB84-8C09-493C-BEB6-E34177984695}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7000BB84-8C09-493C-BEB6-E34177984695}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7000BB84-8C09-493C-BEB6-E34177984695}.Debug|x64.ActiveCfg = Debug|x64
+		{7000BB84-8C09-493C-BEB6-E34177984695}.Debug|x64.Build.0 = Debug|x64
+		{7000BB84-8C09-493C-BEB6-E34177984695}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7000BB84-8C09-493C-BEB6-E34177984695}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7000BB84-8C09-493C-BEB6-E34177984695}.Release|x64.ActiveCfg = Release|x64
+		{7000BB84-8C09-493C-BEB6-E34177984695}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C3825FE2-C821-4A48-BC55-88196AB49257}
+	EndGlobalSection
+EndGlobal
