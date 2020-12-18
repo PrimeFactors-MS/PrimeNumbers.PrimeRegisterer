@@ -1,46 +1,49 @@
-﻿using PrimeNumbers.Shared.PrimeCalculation;
+﻿using PrimeNumbers.PrimeRegisterer.Core;
 using System;
 using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PrimeNumbers.PrimeRegisterer.Worker
 {
     class Program
     {
+        private static PrimeRegistererHandler _primeHandler;
+        private static readonly object _waitForStopMutex = new object();
+
         static void Main(string[] _)
         {
-            Random random = new();
-            ulong number = (ulong)random.Next();
-            var primeResult = PrimeCalculator.GetPrimes(number);
+            AttachToShutdown();
 
-            var a = SubmitPrimeNumber(new PrimeRecord(number, primeResult.IsPrime, primeResult.Primes)).Result;
-            Console.WriteLine(a);
-        }
+            PrimeRangeCalculator calculator = new ();
+            PrimeResultSubmitter resultSubmitter = PrimeResultSubmitter.CreateNew(new Uri("http://192.168.1.18:30006"));
+            _primeHandler = new(calculator, resultSubmitter, new NumbersToCalculatedAssigner());
+            _primeHandler.Start();
 
-
-
-        private static async Task<bool> SubmitPrimeNumber(PrimeRecord record)
-        {
-            HttpClient client = new HttpClient()
+            lock (_waitForStopMutex)
             {
-                BaseAddress = new Uri("http://192.168.1.18:30006")
-            };
-
-            HttpContent content;
-            using (MemoryStream jsonStream = new ())
-            using (StreamReader reader = new (jsonStream, Encoding.UTF8))
-            {
-                await JsonSerializer.SerializeAsync(jsonStream, record);
-                jsonStream.Position = 0;
-                string jsonString = await reader.ReadToEndAsync();
-                content = new StringContent(jsonString, Encoding.UTF8, "application/json");
+                Monitor.Wait(_waitForStopMutex);
             }
-            HttpResponseMessage response = await client.PostAsync("Primes", content);
-
-            return response.IsSuccessStatusCode;
         }
+
+        static void AttachToShutdown()
+        {
+            AppDomain.CurrentDomain.ProcessExit += (_, _) => OnStop();
+            Console.CancelKeyPress += (_, _) => OnStop();
+        }
+
+        static void OnStop()
+        {
+            Console.WriteLine("STOPPING");
+            _primeHandler.Stop();
+            lock (_waitForStopMutex)
+            {
+                Monitor.Pulse(_waitForStopMutex);
+            }
+        }
+
     }
 }

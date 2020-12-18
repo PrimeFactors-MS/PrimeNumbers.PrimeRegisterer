@@ -5,4 +5,8 @@
     <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="PrimeNumbers.Shared.PrimeCalculation" Version="1.0.0" />
+  </ItemGroup>
+
 </Project>

@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PrimeNumbers.Shared.PrimeCalculation\PrimeNumbers.Shared.PrimeCalculation.csproj" />
+    <ProjectReference Include="..\PrimeNumbers.PrimeRegisterer.Core\PrimeNumbers.PrimeRegisterer.Core.csproj" />
   </ItemGroup>
 
 </Project>
