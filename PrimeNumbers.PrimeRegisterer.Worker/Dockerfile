@@ -6,7 +6,8 @@ WORKDIR /app
 FROM mcr.microsoft.com/dotnet/sdk:5.0-buster-slim AS build
 WORKDIR /src
 COPY ["PrimeNumbers.PrimeRegisterer.Worker/PrimeNumbers.PrimeRegisterer.Worker.csproj", "PrimeNumbers.PrimeRegisterer.Worker/"]
-COPY ["PrimeNumbers.Shared.PrimeCalculation/PrimeNumbers.Shared.PrimeCalculation.csproj", "PrimeNumbers.Shared.PrimeCalculation/"]
+COPY ["PrimeNumbers.PrimeRegisterer.Core/PrimeNumbers.PrimeRegisterer.Core.csproj", "PrimeNumbers.PrimeRegisterer.Core/"]
+COPY ["NuGet.Config", "."]
 RUN dotnet restore "PrimeNumbers.PrimeRegisterer.Worker/PrimeNumbers.PrimeRegisterer.Worker.csproj"
 COPY . .
 WORKDIR "/src/PrimeNumbers.PrimeRegisterer.Worker"
