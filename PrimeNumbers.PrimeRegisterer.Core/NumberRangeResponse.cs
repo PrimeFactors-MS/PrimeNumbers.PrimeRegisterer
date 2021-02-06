@@ -6,6 +6,5 @@ using System.Threading.Tasks;
 
 namespace PrimeNumbers.PrimeRegisterer.Core
 {
-
-    public record PrimeRecord(ulong Number, bool IsPrime, ulong[] PrimeFactors);
+    public record NumberRangeResponse(uint WorkerId, NumberRange Range);
 }

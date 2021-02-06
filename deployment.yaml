@@ -1,0 +1,24 @@
+﻿apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prime-registerer
+spec:
+  selector:
+    matchLabels:
+      app: prime-registerer
+  template:
+    metadata:
+      labels:
+        app: prime-registerer
+        project: prime-numbers
+    spec:
+      containers:
+      - name: prime-registerer
+        image: prime-registerer:v1
+        imagePullPolicy: Never
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+        ports:
+        - containerPort: 80
