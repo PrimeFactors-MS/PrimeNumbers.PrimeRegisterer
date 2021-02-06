@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RabbitMQ.Client;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,44 +10,43 @@ using System.Threading.Tasks;
 
 namespace PrimeNumbers.PrimeRegisterer.Core
 {
-    public class PrimeResultSubmitter : IDisposable
+    public sealed class PrimeResultSubmitter : IDisposable
     {
-        private readonly HttpClient _client;
+        private readonly string _exchangeName;
+        private readonly IConnection _connection;
+        private readonly IModel _channel;
 
-        private PrimeResultSubmitter(HttpClient client)
+        private PrimeResultSubmitter(IConnection rmqConnection)
         {
-            _client = client;
+            _exchangeName = "Exch.PrimeRegisterer.Results";
+            _connection = rmqConnection;
+            _channel = rmqConnection.CreateModel();
         }
 
-        public static PrimeResultSubmitter CreateNew(Uri connectionUri)
+        public static PrimeResultSubmitter CreateNew(string hostname, int port)
         {
-            HttpClient client = new ()
+            ConnectionFactory connectionFactory = new()
             {
-                BaseAddress = connectionUri
+                HostName = hostname,
+                Port = port,
+                VirtualHost = "primeRegistration",
+                UserName = "guest",
+                Password = "guest",
             };
-            return new PrimeResultSubmitter(client);
+            IConnection connection = connectionFactory.CreateConnection();
+
+            return new PrimeResultSubmitter(connection);
         }
 
-        public async Task<bool> SubmitPrimeNumber(PrimeRecord record)
+        public void SubmitPrimeNumber(PrimeRecordReport recordReport)
         {
-            HttpContent content;
-            using (MemoryStream jsonStream = new())
-            using (StreamReader reader = new(jsonStream, Encoding.UTF8))
-            {
-                await JsonSerializer.SerializeAsync(jsonStream, record);
-                jsonStream.Position = 0;
-                string jsonString = await reader.ReadToEndAsync().ConfigureAwait(false);
-                content = new StringContent(jsonString, Encoding.UTF8, "application/json");
-            }
-            HttpResponseMessage response = await _client.PostAsync("Primes", content);
-
-            return response.IsSuccessStatusCode;
+            byte[] jsonBytes = JsonSerializer.SerializeToUtf8Bytes(recordReport);
+            _channel.BasicPublish(_exchangeName, "", body: jsonBytes);
         }
 
         public void Dispose()
         {
-            _client.Dispose();
-            GC.SuppressFinalize(this);
+            _connection.Dispose();
         }
     }
 }

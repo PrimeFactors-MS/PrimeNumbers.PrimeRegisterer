@@ -21,13 +21,14 @@ namespace PrimeNumbers.PrimeRegisterer.Worker
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            //string primesDbUrl = "http://primes-db-service:30006";
-            //string numberAssignerUrl = "http://number-assigner-service:30007";
-            string primesDbUrl = "http://localhost:30006";
-            string numberAssignerUrl = "http://localhost:30007";
+            string rabbitmqHostname = "rabbitmq-msprimes-service";
+            string numberAssignerUrl = "http://number-assigner-service:30007";
+            //string rabbitmqHostname = "localhost";
+            //string numberAssignerUrl = "http://localhost:30007";
+            int rabbitmqPort = 30101;
 
             PrimeRangeCalculator calculator = new();
-            PrimeResultSubmitter resultSubmitter = PrimeResultSubmitter.CreateNew(new Uri(primesDbUrl));
+            PrimeResultSubmitter resultSubmitter = PrimeResultSubmitter.CreateNew(rabbitmqHostname, rabbitmqPort);
             NumbersToCalculateAssigner numbersAssigner = NumbersToCalculateAssigner.CreateNew(new Uri(numberAssignerUrl));
             _primeHandler = new PrimeRegistererHandler(calculator, resultSubmitter, numbersAssigner, _logger, 5);
             _primeHandler.Start();

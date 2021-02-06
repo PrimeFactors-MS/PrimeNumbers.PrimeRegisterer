@@ -31,12 +31,16 @@ namespace PrimeNumbers.PrimeRegisterer.Core
             _keepAliveIntervalSeconds = keepAliveIntervalSeconds;
         }
 
-        private void OnPrimeCalculated(PrimeRecord record)
+        private void OnPrimeCalculated(PrimeRecordReport recordReport)
         {
-            _resultSubmitter.SubmitPrimeNumber(record).ContinueWith(task =>
+            try
             {
-                if (task.Exception != null) _logger.LogError(task.Exception, "Error submitting prime");
-            }).Wait();
+                _resultSubmitter.SubmitPrimeNumber(recordReport);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Error submitting prime");
+            }
         }
 
         public void Start()
@@ -66,6 +70,7 @@ namespace PrimeNumbers.PrimeRegisterer.Core
                     await _numbersAssigner.FinishWorkingRange().ConfigureAwait(false);
                 }
             }
+            catch (TaskCanceledException) { }
             catch (Exception e)
             {
                 _logger.LogCritical(e, "Main thread CRASHED");
@@ -89,7 +94,7 @@ namespace PrimeNumbers.PrimeRegisterer.Core
                 {
                     await _numbersAssigner.SendKeepAlive();
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     _logger.LogError("KeepAlive thread error");
                 }

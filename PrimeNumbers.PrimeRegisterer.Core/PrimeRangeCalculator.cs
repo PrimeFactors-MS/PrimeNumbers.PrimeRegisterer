@@ -1,6 +1,7 @@
 ﻿using PrimeNumbers.Shared.PrimeCalculation;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -11,7 +12,7 @@ namespace PrimeNumbers.PrimeRegisterer.Core
     public class PrimeRangeCalculator
     {
         private readonly CancellationTokenSource _cts;
-        public event Action<PrimeRecord> PrimesCalculated = delegate { };
+        public event Action<PrimeRecordReport> PrimesCalculated = delegate { };
         private Task _calculationTask;
 
         public PrimeRangeCalculator()
@@ -23,11 +24,18 @@ namespace PrimeNumbers.PrimeRegisterer.Core
         {
             _calculationTask = Task.Run(() =>
             {
+                Stopwatch stopwatch = new Stopwatch();
                 PrimeCalculationResult result;
                 for (ulong i = start; i <= end; i++)
                 {
+                    stopwatch.Start();
                     result = PrimeCalculator.GetPrimes(i);
-                    PrimesCalculated.Invoke(new PrimeRecord(i, result.IsPrime, result.Primes));
+                    stopwatch.Stop();
+                    
+                    PrimeRecord record = new(i, result.IsPrime, result.Primes);
+                    PrimeRecordReport recordReport = new(record, stopwatch.ElapsedMilliseconds);
+                    
+                    PrimesCalculated.Invoke(recordReport);
                 }
             }, _cts.Token);
             return _calculationTask;
