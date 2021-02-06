@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,18 +13,20 @@ namespace PrimeNumbers.PrimeRegisterer.Core
         private readonly PrimeRangeCalculator _calculator;
         private readonly PrimeResultSubmitter _resultSubmitter;
         private readonly NumbersToCalculateAssigner _numbersAssigner;
+        private readonly ILogger _logger;
         private readonly int _keepAliveIntervalSeconds;
         private CancellationTokenSource _cts;
         private Task _worker;
         private Task _keepAliveSender;
 
         public PrimeRegistererHandler(PrimeRangeCalculator calculator, PrimeResultSubmitter resultSubmitter,
-                                      NumbersToCalculateAssigner numbersAssigner,
+                                      NumbersToCalculateAssigner numbersAssigner, ILogger logger,
                                       int keepAliveIntervalSeconds)
         {
             _calculator = calculator;
             _resultSubmitter = resultSubmitter;
             _numbersAssigner = numbersAssigner;
+            _logger = logger;
             _calculator.PrimesCalculated += OnPrimeCalculated;
             _keepAliveIntervalSeconds = keepAliveIntervalSeconds;
         }
@@ -32,7 +35,7 @@ namespace PrimeNumbers.PrimeRegisterer.Core
         {
             _resultSubmitter.SubmitPrimeNumber(record).ContinueWith(task =>
             {
-                if (task.Exception != null) Console.WriteLine(task.Exception + "\n\n\n");
+                if (task.Exception != null) _logger.LogError(task.Exception, "Error submitting prime");
             }).Wait();
         }
 
@@ -48,7 +51,7 @@ namespace PrimeNumbers.PrimeRegisterer.Core
             _cts.Cancel();
             _calculator.Stop();
             _worker.Wait();
-
+            _keepAliveSender.Wait();
         }
 
 
@@ -65,9 +68,8 @@ namespace PrimeNumbers.PrimeRegisterer.Core
             }
             catch (Exception e)
             {
-                Console.WriteLine("MAIN THREAD CRASHED\n" + e.ToString());
+                _logger.LogCritical(e, "Main thread CRASHED");
             }
-            Console.WriteLine("ENDED");
         }
 
         private async Task KeepAliveSender()
@@ -89,7 +91,7 @@ namespace PrimeNumbers.PrimeRegisterer.Core
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("KEEP ALIVE THREAD ERROR\n" + e.ToString());
+                    _logger.LogError("KeepAlive thread error");
                 }
             }
         }

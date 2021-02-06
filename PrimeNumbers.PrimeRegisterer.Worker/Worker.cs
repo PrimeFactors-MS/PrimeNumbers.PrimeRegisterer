@@ -1,0 +1,47 @@
+using PrimeNumbers.PrimeRegisterer.Core;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace PrimeNumbers.PrimeRegisterer.Worker
+{
+    public class Worker : BackgroundService
+    {
+        private readonly ILogger<Worker> _logger;
+        private PrimeRegistererHandler _primeHandler;
+
+        public Worker(ILogger<Worker> logger)
+        {
+            _logger = logger;
+        }
+
+        protected override Task ExecuteAsync(CancellationToken stoppingToken)
+        {
+            //string primesDbUrl = "http://primes-db-service:30006";
+            //string numberAssignerUrl = "http://number-assigner-service:30007";
+            string primesDbUrl = "http://localhost:30006";
+            string numberAssignerUrl = "http://localhost:30007";
+
+            PrimeRangeCalculator calculator = new();
+            PrimeResultSubmitter resultSubmitter = PrimeResultSubmitter.CreateNew(new Uri(primesDbUrl));
+            NumbersToCalculateAssigner numbersAssigner = NumbersToCalculateAssigner.CreateNew(new Uri(numberAssignerUrl));
+            _primeHandler = new PrimeRegistererHandler(calculator, resultSubmitter, numbersAssigner, _logger, 5);
+            _primeHandler.Start();
+
+            _logger.LogInformation("Started successfully");
+
+            return Task.CompletedTask;
+        }
+
+        public override Task StopAsync(CancellationToken cancellationToken)
+        {
+            _logger.LogInformation("Stopping");
+            _primeHandler.Stop();
+            return Task.CompletedTask;
+        }
+    }
+}

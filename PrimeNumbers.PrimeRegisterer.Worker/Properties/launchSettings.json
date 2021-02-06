@@ -1,7 +1,11 @@
 {
   "profiles": {
     "PrimeNumbers.PrimeRegisterer.Worker": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "dotnetRunMessages": "true"
     },
     "Docker": {
       "commandName": "Docker"
